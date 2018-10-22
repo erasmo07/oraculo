@@ -4,7 +4,7 @@
 """Tests for `oraculo` package."""
 import unittest
 from mock import patch, MagicMock
-from oraculo.gods import faveo
+from oraculo.gods import faveo, exceptions
 
 
 class TestAPIClient(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestAPIClient(unittest.TestCase):
         # THEN
         self.assertEqual(instance_client._authenticated, True)
 
-    @patch('oraculo.gods.faveo.requests.get')
+    @patch('oraculo.gods.faveo.requests.post')
     def test_invalid_authentication(self, mock_get):
         # GIVEN
         response = MagicMock()
@@ -42,7 +42,7 @@ class TestAPIClient(unittest.TestCase):
         # GIVEN
         response = MagicMock()
         response.status_code = 200
-        response.json.return_value = dict()
+        response.json.return_value = dict(data=dict())
         mock_get.return_value = response
 
         # WHEN
@@ -61,14 +61,14 @@ class TestAPIClient(unittest.TestCase):
         client = faveo.APIClient()
 
         # THEN
-        self.assertRaises(faveo.NotFound, client.get('test'))
+        self.assertRaises(exceptions.NotFound, client.get('test'))
 
     @patch('oraculo.gods.faveo.requests.post')
     def test_post_status_code_ok(self, mock_post):
         # GIVEN
         response = MagicMock()
         response.status_code = 200
-        response.json.return_value = dict()
+        response.json.return_value = dict(data=dict())
         mock_post.return_value = response
 
         # WHEN
@@ -87,4 +87,4 @@ class TestAPIClient(unittest.TestCase):
         client = faveo.APIClient()
 
         # THEN
-        self.assertRaises(faveo.NotFound, client.post, 'test', {})
+        self.assertRaises(exceptions.NotFound, client.post, 'test', {})

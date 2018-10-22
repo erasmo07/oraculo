@@ -1,62 +1,40 @@
 # -*- coding: utf-8 -*-
 
 """Main module."""
+import os
 import requests
+from .base import BaseAPIClient
+from .exceptions import CantAuthenticate, NotSetEnviromentVariable
 
 
-class CantAuthenticate(Exception):
-    pass
+class APIClient(BaseAPIClient):
+    base_url = 'http://faveo.grupopuntacana.com:81/'
 
-
-class NotFound(Exception):
-    pass
-
-
-class APIClient(object):
+    _username = os.environ.get("FAVEO_USERNAME", None)
+    _password = os.environ.get("FAVEO_PASSWORD", None)
     _authenticated = False
-    _base_url = 'http://faveo.grupopuntacana.com:81'
-    _authenticate_url = _base_url + '/api/v1/autenticate/'
-
-    def __init__(self):
-        self.authenticate()
+    _authenticate_url = base_url + 'api/v1/authenticate'
 
     def authenticate(self, exception=CantAuthenticate):
         """
         Method to authenticate with Faveo.
         """
-        params = {'username': 'username', 'password': 'password'}
-        request = requests.get(self._authenticate_url, params=params)
+        if not self._username and not self._password:
+            msg = 'You need to put the oracle environment variables.'
+            raise NotSetEnviromentVariable(msg)
 
-        if request.status_code == 200:
+        params = {'username': self._username, 'password': self._password}
+        response = requests.post(
+            self._authenticate_url,
+            params=params, headers=self._headers_base)
+
+        if response.status_code == 200:
+            result = response.json()
+            token = result.get('data').get('token')
+            self._params_base.update(dict(token=token))
             self._authenticated = True
 
-        if request.status_code == 403:
+        if response.status_code == 403:
             raise exception('msg')
 
         return self._authenticated
-
-    def get(self, url, params=None):
-        request = requests.get(self._base_url + url, params=params)
-
-        if request.status_code is 200:
-            return request.json()
-
-        if request.status_code is 403:
-            self.authenticated()
-            self.get(url, params)
-
-        if request.status_code is 404:
-            raise NotFound(request.context)
-
-    def post(self, url, body):
-        request = requests.post(self._base_url + url, data=body)
-
-        if request.status_code == 200:
-            return request.json()
-
-        if request.status_code == 403:
-            self.authenticated()
-            self.post(url, body)
-
-        if request.status_code == 404:
-            raise NotFound(request.context)
