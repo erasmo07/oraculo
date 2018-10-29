@@ -1,12 +1,14 @@
 import abc
 import json
-import requests
+import requests 
 from .exceptions import NotFound, BadRequest, CantAuthenticate
 
 
 class BaseAPIClient(abc.ABC):
     _headers_base = {'content-type': 'application/json'}
     _params_base = dict()
+    _auth = None 
+    _lib = requests 
 
     @property
     @abc.abstractmethod
@@ -25,7 +27,7 @@ class BaseAPIClient(abc.ABC):
         if params and isinstance(params, dict):
             self._params_base.update(params)
 
-        request = requests.get(
+        request = self._lib.get(
             self.base_url + url,
             params=self._params_base,
             headers=self._headers_base)
@@ -47,7 +49,7 @@ class BaseAPIClient(abc.ABC):
     def post(self, url, body, params=None):
         if params:
             self._params_base.update(params)
-        request = requests.post(
+        request = self._lib.post(
             self.base_url + url,
             data=json.dumps(body),
             headers=self._headers_base,
@@ -59,7 +61,7 @@ class BaseAPIClient(abc.ABC):
         if request.status_code == 400:
             raise BadRequest(request.json().get('message'))
 
-        if request.status_code is 401:
+        if request.status_code == 401:
             self.autheticate()
             self.get(url, params)
 
@@ -72,5 +74,7 @@ class BaseAPIClient(abc.ABC):
 
     def patch(self, url, pk):
         url = "{self.base_url}{url}/{pk}"
-        request = requests.patch(
-            url=url, headers=self._headers_base, params=self._params_base)
+        request = self._lib.patch(
+            url=url,
+            headers=self._headers_base,
+            params=self._params_base)
