@@ -3,6 +3,9 @@ export FAVEO_USERNAME=admin
 export FAVEO_PASSWORD=Nomelose123
 export FAVEO_BASE_URL=http://faveo.grupopuntacana.com:81/
 
+# FAVEO DB
+export FAVEO_DB_BASE_URL=http://0.0.0.0:5002/
+
 # SAP
 export SAP_USERNAME=dchot
 export SAP_PASSWORD=1234567
