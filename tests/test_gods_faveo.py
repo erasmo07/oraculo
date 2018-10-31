@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Tests for `oraculo` package."""
+import os
 import unittest
 from mock import patch, MagicMock
 from oraculo.gods import faveo, exceptions
@@ -10,14 +11,17 @@ from oraculo.gods import faveo, exceptions
 class TestAPIClient(unittest.TestCase):
 
     def test_initial_attribute(self):
+        # GIVEN
+        base_url = os.environ.get('FAVEO_BASE_URL')
+
         # WHEN
         client = faveo.APIClient
 
         # THEN
         self.assertEqual(client._authenticated, False)
         self.assertEqual(
-            client._base_url, 'http://faveo.grupopuntacana.com:81')
-        _authenticate_url = client._base_url + '/api/v1/autenticate/'
+            client.base_url, base_url)
+        _authenticate_url = base_url + 'api/v1/authenticate'
         self.assertEqual(client._authenticate_url, _authenticate_url)
 
     def test_success_authentication(self):

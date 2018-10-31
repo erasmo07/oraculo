@@ -8,7 +8,7 @@ from .exceptions import CantAuthenticate, NotSetEnviromentVariable
 
 
 class APIClient(BaseAPIClient):
-    base_url = 'http://faveo.grupopuntacana.com:81/'
+    base_url = os.environ.get('FAVEO_BASE_URL', None)
 
     _username = os.environ.get("FAVEO_USERNAME", None)
     _password = os.environ.get("FAVEO_PASSWORD", None)
@@ -19,14 +19,15 @@ class APIClient(BaseAPIClient):
         """
         Method to authenticate with Faveo.
         """
-        if not self._username and not self._password:
+        if not self._username and not self._password and not self.base_url:
             msg = 'You need to put the oracle environment variables.'
             raise NotSetEnviromentVariable(msg)
 
         params = {'username': self._username, 'password': self._password}
         response = requests.post(
             self._authenticate_url,
-            params=params, headers=self._headers_base)
+            params=params,
+            headers=self._headers_base)
 
         if response.status_code == 200:
             result = response.json()

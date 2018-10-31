@@ -23,37 +23,35 @@ class BaseAPIClient(abc.ABC):
         """Method documentation"""
         return
 
-    def get(self, url, params=None):
-        if params and isinstance(params, dict):
-            self._params_base.update(params)
-
+    def get(self, url, params=dict()):
+        params.update(self._params_base)
         request = self._lib.get(
             self.base_url + url,
-            params=self._params_base,
+            params=params,
             headers=self._headers_base)
 
         if request.status_code is 200:
             return request.json()
 
         if request.status_code is 401:
-            self.autheticate()
+            self.authenticate()
             self.get(url, params)
 
         if request.status_code is 403:
-            self.authenticated()
+            self.authenticate()
             self.get(url, params)
 
         if request.status_code is 404:
             raise NotFound(request.context)
 
-    def post(self, url, body, params=None):
-        if params:
-            self._params_base.update(params)
+    def post(self, url, body, params=dict()):
+        params.update(self._params_base)
+
         request = self._lib.post(
             self.base_url + url,
             data=json.dumps(body),
             headers=self._headers_base,
-            params=self._params_base)
+            params=params)
 
         if request.status_code == 200:
             return request.json()
@@ -62,7 +60,7 @@ class BaseAPIClient(abc.ABC):
             raise BadRequest(request.json().get('message'))
 
         if request.status_code == 401:
-            self.autheticate()
+            self.authenticate()
             self.get(url, params)
 
         if request.status_code == 403:
