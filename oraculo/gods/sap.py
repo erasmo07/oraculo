@@ -7,6 +7,7 @@ from .exceptions import CantAuthenticate, NotSetEnviromentVariable
 
 class APIClient(BaseAPIClient):
     base_url = os.environ.get('SAP_BASE_URL', None)
+    _params_base = {'sap-client': os.environ.get('SAP_CLIENT')}
     _username = os.environ.get('SAP_USERNAME', None)
     _password = os.environ.get('SAP_PASSWORD', None)
     _authentication_url = '/portal_clientes/lista_servicios?sap-client=300'
@@ -29,10 +30,9 @@ class APIClient(BaseAPIClient):
         response = session.get(
             self.base_url + self._authentication_url)
 
-        token = response.headers.get('x-csrf-token')
-        self._headers_base.update({'X-CSRF-Token': token})
-
         if response.status_code == 200:
+            token = response.headers.get('x-csrf-token')
+            session.headers.update({'X-CSRF-Token': token})
             self._lib = session
             self._authenticated = True
 

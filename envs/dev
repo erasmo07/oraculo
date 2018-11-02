@@ -9,4 +9,5 @@ export FAVEO_DB_BASE_URL=http://0.0.0.0:5002/
 # SAP
 export SAP_USERNAME=dchot
 export SAP_PASSWORD=1234567
-export SAP_BASE_URL=http://athena.grupopuntacana.com:8000
+export SAP_BASE_URL=http://athena.grupopuntacana.com:8000/
+export SAP_CLIENT=300

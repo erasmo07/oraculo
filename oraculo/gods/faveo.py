@@ -14,6 +14,7 @@ class APIClient(BaseAPIClient):
     _password = os.environ.get("FAVEO_PASSWORD", None)
     _authenticated = False
     _authenticate_url = base_url + 'api/v1/authenticate'
+    _params_base = dict()
 
     def authenticate(self, exception=CantAuthenticate):
         """
