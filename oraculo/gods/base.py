@@ -73,7 +73,7 @@ class BaseAPIClient(abc.ABC):
         if request.status_code == 404:
             raise NotFound(request.content)
         
-        if reqeust.status_code == 500:
+        if request.status_code == 500:
             raise InternalServer(request.content)
 
     def patch(self, url, pk):
