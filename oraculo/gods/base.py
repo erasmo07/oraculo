@@ -1,7 +1,7 @@
 import abc
 import json
 import requests 
-from .exceptions import NotFound, BadRequest, CantAuthenticate
+from .exceptions import NotFound, BadRequest, CantAuthenticate, InternalServer
 
 
 class BaseAPIClient(abc.ABC):
@@ -43,6 +43,9 @@ class BaseAPIClient(abc.ABC):
 
         if request.status_code is 404:
             raise NotFound(request.context)
+        
+        if request.status_code == 500:
+            raise InternalServer(request.content)
 
     def post(self, url, body, params=dict()):
         params.update(self._params_base)
@@ -57,7 +60,7 @@ class BaseAPIClient(abc.ABC):
             return request.json()
 
         if request.status_code == 400:
-            raise BadRequest(request.json().get('message'))
+            raise BadRequest(request.content)
 
         if request.status_code == 401:
             self.authenticate()
@@ -68,7 +71,10 @@ class BaseAPIClient(abc.ABC):
             self.post(url, body)
 
         if request.status_code == 404:
-            raise NotFound(request.context)
+            raise NotFound(request.content)
+        
+        if reqeust.status_code == 500:
+            raise InternalServer(request.content)
 
     def patch(self, url, pk):
         url = "{self.base_url}{url}/{pk}"

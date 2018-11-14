@@ -13,3 +13,6 @@ class BadRequest(Exception):
 class NotSetEnviromentVariable(Exception):
     pass
 
+
+class InternalServer(Exception):
+    pass
