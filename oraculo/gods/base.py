@@ -1,7 +1,9 @@
 import abc
 import json
 import requests 
-from .exceptions import NotFound, BadRequest, CantAuthenticate, InternalServer
+from .exceptions import (
+    NotFound, BadRequest, CantAuthenticate,
+    InternalServer, NotHasResponse)
 
 
 class BaseAPIClient(abc.ABC):
@@ -24,6 +26,7 @@ class BaseAPIClient(abc.ABC):
         return
 
     def get(self, url, params=dict()):
+        """Method documentation"""
         params.update(self._params_base)
         request = self._lib.get(
             self.base_url + url,
@@ -46,6 +49,7 @@ class BaseAPIClient(abc.ABC):
         
         if request.status_code == 500:
             raise InternalServer(request.content)
+        raise NotHasResponse(request.content)
 
     def post(self, url, body, params=dict()):
         params.update(self._params_base)
@@ -75,6 +79,7 @@ class BaseAPIClient(abc.ABC):
         
         if request.status_code == 500:
             raise InternalServer(request.content)
+        raise NotHasResponse(request.content)
 
     def patch(self, url, pk):
         url = "{self.base_url}{url}/{pk}"

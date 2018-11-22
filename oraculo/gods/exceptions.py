@@ -16,3 +16,7 @@ class NotSetEnviromentVariable(Exception):
 
 class InternalServer(Exception):
     pass
+
+
+class NotHasResponse(Exception):
+    pass
