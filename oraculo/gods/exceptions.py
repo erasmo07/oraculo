@@ -20,3 +20,11 @@ class InternalServer(Exception):
 
 class NotHasResponse(Exception):
     pass
+
+
+class Forbidden(Exception):
+    pass
+
+
+class Unauthorized(Exception):
+    pass
