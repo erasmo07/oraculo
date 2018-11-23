@@ -65,7 +65,7 @@ class TestAPIClient(unittest.TestCase):
         client = faveo.APIClient()
 
         # THEN
-        self.assertRaises(exceptions.NotFound, client.get('test'))
+        self.assertRaises(exceptions.NotFound, client.get, 'test')
 
     @patch('oraculo.gods.faveo.requests.post')
     def test_post_status_code_ok(self, mock_post):
