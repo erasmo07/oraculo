@@ -33,6 +33,10 @@ class BaseAPIClient(abc.ABC):
             self.base_url + url,
             params=params,
             headers=self._headers_base)
+        
+        if response.status_code == 401:
+            self.authenticate()
+            self.get(url , params=params)
 
         return self.return_value(response)
 
@@ -44,6 +48,10 @@ class BaseAPIClient(abc.ABC):
             data=json.dumps(body),
             headers=self._headers_base,
             params=params)
+        
+        if response.status_code == 401:
+            self.authenticate()
+            self.post(url , body=body, params=params)
 
         return self.return_value(response)
         
@@ -55,6 +63,10 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=self._params_base)
         
+        if response.status_code == 401:
+            self.authenticate()
+            self.patch(url , pk=pk)
+
         return self.return_value(response)
 
     def return_value(self, request):
