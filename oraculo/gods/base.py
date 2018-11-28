@@ -73,7 +73,10 @@ class BaseAPIClient(abc.ABC):
 
     def return_value(self, request):
         if request.status_code == 200:
-            return request.json()
+            try:
+                return request.json()
+            except json.decoder.JSONDecodeError:
+                return {}
 
         if request.status_code == 400:
             raise BadRequest(request.content)
