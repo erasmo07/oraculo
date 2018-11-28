@@ -1,10 +1,16 @@
 import abc
 import json
 import requests 
+import logging 
 from .exceptions import (
     NotFound, BadRequest, CantAuthenticate,
     InternalServer, NotHasResponse, Forbidden,
     Unauthorized)
+
+
+logging.basicConfig(format='%(asctime)s %(message)s') 
+logger = logging.getLogger() 
+logger.setLevel(logging.INFO) 
 
 
 class BaseAPIClient(abc.ABC):
@@ -34,6 +40,10 @@ class BaseAPIClient(abc.ABC):
             self.base_url + url,
             params=params,
             headers=self._headers_base)
+
+        call_message = "METHOD: {2} URL: {0} - PARAMS: {1}".format(
+            response.request.url, params, response.request.method)
+        logger.info(call_message)
         
         if response.status_code == 401:
             self.authenticate()
@@ -48,13 +58,16 @@ class BaseAPIClient(abc.ABC):
     def post(self, url, body, params=dict()):
         params.update(self._params_base)
         
-
         response = self._lib.post(
             self.base_url + url,
             data=json.dumps(body),
             headers=self._headers_base,
             params=params)
-        
+
+        call_message = "URL: {0} - BODY: {1} - PARAMS".format(
+            response.request.url, body, params)
+        logger.info(call_message)
+
         if response.status_code == 401:
             self.authenticate()
             self.post(url , body=body, params=params)
