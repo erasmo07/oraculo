@@ -35,9 +35,13 @@ class BaseAPIClient(abc.ABC):
             params=params,
             headers=self._headers_base)
         
-        if response.status_code == 401 or response.status_code == 403:
+        if response.status_code == 401:
             self.authenticate()
             self.get(url , params=params)
+
+        if response.status_code == 403:
+            self.authenticate()
+            self.get(url, params)
 
         return self.return_value(response)
 
@@ -51,7 +55,11 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=params)
         
-        if response.status_code == 401 or response.status_code == 403:
+        if response.status_code == 401:
+            self.authenticate()
+            self.post(url , body=body, params=params)
+        
+        if response.status_code == 403:
             self.authenticate()
             self.post(url , body=body, params=params)
 
@@ -65,7 +73,11 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=self._params_base)
         
-        if response.status_code == 401 or response.status_code == 403:
+        if response.status_code == 401:
+            self.authenticate()
+            self.patch(url , pk=pk)
+        
+        if response.status_code == 403:
             self.authenticate()
             self.patch(url , pk=pk)
 
