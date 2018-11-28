@@ -12,6 +12,7 @@ class BaseAPIClient(abc.ABC):
     _params_base = dict()
     _auth = None 
     _lib = requests 
+    _refresh_token_status = [401, 403]
 
     @property
     @abc.abstractmethod
@@ -34,7 +35,7 @@ class BaseAPIClient(abc.ABC):
             params=params,
             headers=self._headers_base)
         
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             self.authenticate()
             self.get(url , params=params)
 
@@ -42,6 +43,7 @@ class BaseAPIClient(abc.ABC):
 
     def post(self, url, body, params=dict()):
         params.update(self._params_base)
+        
 
         response = self._lib.post(
             self.base_url + url,
@@ -49,7 +51,7 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=params)
         
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             self.authenticate()
             self.post(url , body=body, params=params)
 
@@ -63,7 +65,7 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=self._params_base)
         
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             self.authenticate()
             self.patch(url , pk=pk)
 
