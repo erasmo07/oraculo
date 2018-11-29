@@ -14,11 +14,12 @@ logger.setLevel(logging.INFO)
 
 
 class BaseAPIClient(abc.ABC):
+    _auth = None 
     _headers_base = {'content-type': 'application/json'}
     _params_base = dict()
-    _auth = None 
     _lib = requests 
     _refresh_token_status = [401, 403]
+    _authenticated = None 
 
     @property
     @abc.abstractmethod
@@ -36,6 +37,10 @@ class BaseAPIClient(abc.ABC):
     def get(self, url, params=dict()):
         """Method documentation"""
         params.update(self._params_base)
+
+        if not self._authenticated:
+            self.authenticate()
+
         response = self._lib.get(
             self.base_url + url,
             params=params,
@@ -57,6 +62,9 @@ class BaseAPIClient(abc.ABC):
 
     def post(self, url, body, params=dict()):
         params.update(self._params_base)
+
+        if not self._authenticated:
+            self.authenticate()
         
         response = self._lib.post(
             self.base_url + url,
@@ -81,6 +89,10 @@ class BaseAPIClient(abc.ABC):
 
     def patch(self, url, pk):
         url = "{self.base_url}{url}/{pk}"
+
+        if not self._authenticated:
+            self.authenticate()
+
         response = self._lib.patch(
             url=url,
             headers=self._headers_base,
