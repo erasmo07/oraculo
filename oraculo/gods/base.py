@@ -52,11 +52,13 @@ class BaseAPIClient(abc.ABC):
         
         if response.status_code == 401:
             self.authenticate()
-            self.get(url , params=params)
+            self._authenticated = False
+            return self.get(url , params=params)
 
         if response.status_code == 403:
             self.authenticate()
-            self.get(url, params)
+            self._authenticated = False
+            return self.get(url, params)
 
         return self.return_value(response)
 
@@ -72,17 +74,19 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=params)
 
-        call_message = "URL: {0} - BODY: {1} - PARAMS".format(
-            response.request.url, body, params)
+        call_message = "METHOD: {2] URL: {0} - BODY: {1} - PARAMS".format(
+            response.request.url, body, params, response.request.method)
         logger.info(call_message)
 
         if response.status_code == 401:
             self.authenticate()
-            self.post(url , body=body, params=params)
+            self._authenticated = False
+            return self.post(url , body=body, params=params)
         
         if response.status_code == 403:
             self.authenticate()
-            self.post(url , body=body, params=params)
+            self._authenticated = False
+            return self.post(url , body=body, params=params)
 
         return self.return_value(response)
         
@@ -100,11 +104,11 @@ class BaseAPIClient(abc.ABC):
         
         if response.status_code == 401:
             self.authenticate()
-            self.patch(url , pk=pk)
+            return self.patch(url , pk=pk)
         
         if response.status_code == 403:
             self.authenticate()
-            self.patch(url , pk=pk)
+            return self.patch(url , pk=pk)
 
         return self.return_value(response)
 
