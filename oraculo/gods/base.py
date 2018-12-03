@@ -74,8 +74,8 @@ class BaseAPIClient(abc.ABC):
             headers=self._headers_base,
             params=params)
 
-        call_message = "METHOD: {2] URL: {0} - BODY: {1} - PARAMS".format(
-            response.request.url, body, params, response.request.method)
+        call_message = "METHOD: {0} URL: {1} - BODY: {2} - PARAMS: {3}".format(
+            response.request.method, response.request.url, body, params)
         logger.info(call_message)
 
         if response.status_code == 401:
