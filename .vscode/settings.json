@@ -1,4 +1,7 @@
 {
     "python.pythonPath": "/Users/mazy/.virtualenvs/oraculo/bin/python",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false,
+    "python.unitTest.pyTestEnabled": true
 }
