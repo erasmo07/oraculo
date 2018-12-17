@@ -22,3 +22,6 @@ class APIClient(BaseAPIClient):
         self._params_base.update(dict(uid=uid, token=token))
         self._authenticated = True
         return self._authenticated
+    
+    def send_message(self, to, message, url='api/send/chat'):
+        return self.get(url, {'to': to, 'text': message})

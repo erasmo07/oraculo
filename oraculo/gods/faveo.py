@@ -13,7 +13,6 @@ class APIClient(BaseAPIClient):
     _username = os.environ.get("FAVEO_USERNAME", None)
     _password = os.environ.get("FAVEO_PASSWORD", None)
     _authenticated = False
-    _authenticate_url = base_url + 'api/v1/authenticate'
     _params_base = dict()
 
     def authenticate(self, exception=CantAuthenticate):
@@ -25,9 +24,10 @@ class APIClient(BaseAPIClient):
             raise NotSetEnviromentVariable(msg)
 
         params = {'username': self._username, 'password': self._password}
+
+        _authenticate_url = self.base_url + 'api/v1/authenticate'
         response = requests.post(
-            self._authenticate_url,
-            params=params,
+            _authenticate_url, params=params,
             headers=self._headers_base)
 
         if response.status_code == 200:
