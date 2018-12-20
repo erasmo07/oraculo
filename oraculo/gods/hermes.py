@@ -20,3 +20,6 @@ class APIClient(BaseAPIClient):
 
         self._authenticated = True
         return self._authenticated
+
+    def send_message(self, to, message, url='/api/v1/whatsaap/message'):
+        return self.post(url, {'to': to, 'text': message})
