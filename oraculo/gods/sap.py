@@ -10,7 +10,7 @@ class APIClient(BaseAPIClient):
     _params_base = {'sap-client': os.environ.get('SAP_CLIENT')}
     _username = os.environ.get('SAP_USERNAME', None)
     _password = os.environ.get('SAP_PASSWORD', None)
-    _authentication_url = '/portal_clientes/lista_servicios?sap-client=300'
+    _authentication_url = os.environ.get('SAP_AUTHENTICATION_URL', None)
     _authenticated = False
 
     def authenticate(self, exception=CantAuthenticate):
