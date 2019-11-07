@@ -20,7 +20,7 @@ class APIClient(BaseAPIClient):
             msg = 'You need to put the oracle environment variables.'
             raise NotSetEnviromentVariable(msg)
 
-        _authenticate_url = self.base_url + 'ping'
+        _authenticate_url = self.base_url + 'ping/'
         response = requests.post(
             _authenticate_url,
             headers=self._headers_base)
