@@ -1,4 +1,3 @@
-import abc
 import json
 import requests 
 import logging 
@@ -13,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO) 
 
 
-class BaseAPIClient(abc.ABC):
+class BaseAPIClient(object):
     _auth = None 
     _headers_base = {'content-type': 'application/json'}
     _params_base = dict()
@@ -22,17 +21,15 @@ class BaseAPIClient(abc.ABC):
     _authenticated = None 
 
     @property
-    @abc.abstractmethod
     def base_url(self):
-        return 'Should set base_url property'
+        return ValueError('Should set base_url property')
 
     def __init__(self):
         self.authenticate()
 
-    @abc.abstractmethod
     def authenticate(self, exception=CantAuthenticate):
         """Method documentation"""
-        return
+        return ValueError('')
 
     def get(self, url, params=dict()):
         """Method documentation"""
