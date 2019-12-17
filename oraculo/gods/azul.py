@@ -20,7 +20,7 @@ class APIClient(BaseAPIClient):
         Method to authenticate with Azul.
         """
         if (
-            not self.base_url
+            not self.host
             and not self.auth_one
             and not self.auth_two
             and not self.certificate
@@ -67,6 +67,7 @@ class APIClient(BaseAPIClient):
         logger.info(call_message)
 
         response = connection.getresponse()
+        connection.close()
         return self.return_value(response)
 
     def return_value(self, response):
