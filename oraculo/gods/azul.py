@@ -13,7 +13,9 @@ class APIClient(BaseAPIClient):
     auth_two = os.environ.get('AZUL_AUTH_TWO', None)
     certificate = os.environ.get('AZUL_CERTIFICATE_PATH', None)
     certificate_key = os.environ.get('AZUL_CERTIFICATE_KEY_PATH', None)
+    connection_class = http.client.HTTPSConnection
     _authenticated = False
+    _connection = None
 
     def authenticate(self, exception=CantAuthenticate):
         """
@@ -52,8 +54,10 @@ class APIClient(BaseAPIClient):
         return context
 
     def get_connection(self, port=443):
-        return http.client.HTTPSConnection(
-            self.host, port=port, context=self.get_context())
+        if not self._connection:
+            self._connection = self.connection_class(
+                self.host, port=port, context=self.get_context())
+        return self._connection
 
     def post(self, url, body, params=dict(), **kwargs):
         connection = self.get_connection()
@@ -67,7 +71,6 @@ class APIClient(BaseAPIClient):
         logger.info(call_message)
 
         response = connection.getresponse()
-        connection.close()
         return self.return_value(response)
 
     def return_value(self, response):
@@ -80,3 +83,7 @@ class APIClient(BaseAPIClient):
 
         response.status_code = response.status
         return super(APIClient, self).return_value(response)
+    
+    def __del__(self):
+        if self._connection:
+            self._connection.close()
