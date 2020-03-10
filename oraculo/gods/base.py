@@ -47,19 +47,9 @@ class BaseAPIClient(object):
             response.request.url, params, response.request.method)
         logger.info(call_message)
         
-        if response.status_code == 401:
-            self.authenticate()
-            self._authenticated = False
-            return self.get(url , params=params)
-
-        if response.status_code == 403:
-            self.authenticate()
-            self._authenticated = False
-            return self.get(url, params)
-
         return self.return_value(response)
 
-    def post(self, url, body, params=dict()):
+    def post(self, url, body, params=dict(), **kwargs):
         params.update(self._params_base)
 
         if not self._authenticated:
@@ -69,21 +59,12 @@ class BaseAPIClient(object):
             self.base_url + url,
             data=json.dumps(body),
             headers=self._headers_base,
-            params=params)
+            params=params,
+            **kwargs)
 
         call_message = "METHOD: {0} URL: {1} - BODY: {2} - PARAMS: {3}".format(
             response.request.method, response.request.url, body, params)
         logger.info(call_message)
-
-        if response.status_code == 401:
-            self.authenticate()
-            self._authenticated = False
-            return self.post(url , body=body, params=params)
-        
-        if response.status_code == 403:
-            self.authenticate()
-            self._authenticated = False
-            return self.post(url , body=body, params=params)
 
         return self.return_value(response)
         
@@ -99,14 +80,6 @@ class BaseAPIClient(object):
             headers=self._headers_base,
             params=self._params_base)
         
-        if response.status_code == 401:
-            self.authenticate()
-            return self.patch(url , pk=pk)
-        
-        if response.status_code == 403:
-            self.authenticate()
-            return self.patch(url , pk=pk)
-
         return self.return_value(response)
 
     def return_value(self, request):
