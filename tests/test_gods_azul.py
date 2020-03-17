@@ -21,7 +21,7 @@ class TestAPIClient(unittest.TestCase):
 
     def test_success_authentication(self):
         # WHEN
-        instance_client = azul.APIClient()
+        instance_client = azul.APIClient(store='39038540035')
 
         # THEN
         self.assertEqual(instance_client._authenticated, True)
@@ -53,7 +53,7 @@ class TestAPIClient(unittest.TestCase):
         }
 
         # WHEN
-        response = azul.APIClient().post(url, body)
+        response = azul.APIClient(store='39038540035').post(url, body)
 
         # THEN
         self.assertIsInstance(response, dict)

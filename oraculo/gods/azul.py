@@ -8,14 +8,34 @@ from .exceptions import CantAuthenticate, NotSetEnviromentVariable
 
 
 class APIClient(BaseAPIClient):
+    default_store = os.environ.get('AZUL_DEFAULT_STORE', None)
     host = os.environ.get('AZUL_HOST', None)
-    auth_one = os.environ.get('AZUL_AUTH_ONE', None)
-    auth_two = os.environ.get('AZUL_AUTH_TWO', None)
     certificate = os.environ.get('AZUL_CERTIFICATE_PATH', None)
     certificate_key = os.environ.get('AZUL_CERTIFICATE_KEY_PATH', None)
     connection_class = http.client.HTTPSConnection
+
     _authenticated = False
     _connection = None
+
+    def __init__(self, store=None):
+        self.store = store if store else self.default_store
+        super(APIClient, self).__init__()
+
+    @property
+    def auth_one(self):
+        value = os.environ.get('AZUL_%s_AUTH_ONE' % self.store)
+        if not value:
+            raise NotSetEnviromentVariable(
+                'Need set Auth One to %s store' % self.store)
+        return value
+
+    @property
+    def auth_two(self):
+        value = os.environ.get('AZUL_%s_AUTH_TWO' % self.store)
+        if not value:
+            raise NotSetEnviromentVariable(
+                'Need set Auth Two to %s store' % self.store)
+        return value
 
     def authenticate(self, exception=CantAuthenticate):
         """
@@ -41,7 +61,7 @@ class APIClient(BaseAPIClient):
         """
         The way to load certification was provide for larsks on
         Stackoverflow, here are links.
-        
+
         Solution:
             https://stackoverflow.com/questions/30109449/\
                 what-does-sslerror-ssl-pem-lib-ssl-c2532-\
@@ -66,8 +86,9 @@ class APIClient(BaseAPIClient):
             url=url,
             headers=self._headers_base,
             body=json.dumps(body))
-        
-        call_message = "METHOD: {0} URL: {1} - BODY: {2}".format('POST', url, body)
+
+        call_message = "METHOD: {0} URL: {1} - BODY: {2}".format(
+            'POST', url, body)
         logger.info(call_message)
 
         response = connection.getresponse()
@@ -83,7 +104,7 @@ class APIClient(BaseAPIClient):
 
         response.status_code = response.status
         return super(APIClient, self).return_value(response)
-    
+
     def __del__(self):
         if self._connection:
             self._connection.close()
