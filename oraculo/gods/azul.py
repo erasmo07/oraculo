@@ -70,8 +70,6 @@ class APIClient(BaseAPIClient):
             https://stackoverflow.com/users/147356/larsks
         """
         ssl_context = ssl.create_default_context()
-        ssl_context.options &= ~ssl.OP_NO_TLSv1_3 & ~ssl.OP_NO_TLSv1_2 & ~ssl.OP_NO_TLSv1_1
-        ssl_context.minimum_version = ssl.TLSVersion.TLSv1
 
         ssl_context.load_cert_chain(self.certificate, keyfile=self.certificate_key)
         return ssl_context
