@@ -69,9 +69,12 @@ class APIClient(BaseAPIClient):
         Autor:
             https://stackoverflow.com/users/147356/larsks
         """
-        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        context.load_cert_chain(self.certificate, keyfile=self.certificate_key)
-        return context
+        ssl_context = ssl.create_default_context()
+        ssl_context.options &= ~ssl.OP_NO_TLSv1_3 & ~ssl.OP_NO_TLSv1_2 & ~ssl.OP_NO_TLSv1_1
+        ssl_context.minimum_version = ssl.TLSVersion.TLSv1
+
+        ssl_context.load_cert_chain(self.certificate, keyfile=self.certificate_key)
+        return ssl_context
 
     def get_connection(self, port=443):
         if not self._connection:
