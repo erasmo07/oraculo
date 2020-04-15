@@ -69,7 +69,7 @@ class APIClient(BaseAPIClient):
         Autor:
             https://stackoverflow.com/users/147356/larsks
         """
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
         context.load_cert_chain(self.certificate, keyfile=self.certificate_key)
         return context
 
